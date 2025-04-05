@@ -1,8 +1,4 @@
-/**
- * Travel Explorer - Country Information App
- */
-
-// API Configuration
+// Constants
 const API_CONFIG = {
     UNSPLASH: {
         BASE_URL: "https://api.unsplash.com/search/photos",
@@ -13,7 +9,7 @@ const API_CONFIG = {
         }
     },
     REST_COUNTRIES: {
-        BASE_URL: "https://restcountries.com/v3.1",
+        BASE_URL: "https://restcountries.com/v3.1/name",
         FIELDS: ['name', 'flags', 'region', 'subregion', 'population', 'languages', 'currencies']
     },
     WIKIPEDIA: {
@@ -21,84 +17,90 @@ const API_CONFIG = {
     }
 };
 
-// UI Configuration
 const UI_CONFIG = {
     ANIMATION: {
-        DURATION: 500
+        DURATION: 500,
+        DELAY: 100
     },
-    ALERT: {
-        DISPLAY_TIME: 5000
+    RETRY: {
+        MAX_ATTEMPTS: 5,
+        BASE_DELAY: 1000,
+        MAX_DELAY: 10000
     }
 };
 
 // DOM Elements
-let elements = {};
+const elements = {
+    searchInput: document.querySelector('.search-input'),
+    searchButton: document.querySelector('.search-button'),
+    countryDisplay: document.querySelector('.country-display'),
+    flagImage: document.querySelector('.flag-image'),
+    countryName: document.querySelector('.country-name h1'),
+    countrySubtitle: document.querySelector('.country-name h2'),
+    region: document.querySelector('.region'),
+    population: document.querySelector('.population'),
+    currency: document.querySelector('.currency'),
+    languages: document.querySelector('.languages'),
+    description: document.querySelector('.description p'),
+    photoGallery: document.querySelector('.photo-gallery'),
+    expandedView: document.querySelector('.expanded-view'),
+    expandedImage: document.querySelector('.expanded-image'),
+    closeButton: document.querySelector('.close-button'),
+    loadingAnimation: document.querySelector('.loading-animation')
+};
 
-// Initialize app once DOM is fully loaded
-document.addEventListener('DOMContentLoaded', () => {
-    initApp();
-});
-
-function initApp() {
-    // Get all DOM elements
-    elements = {
-        searchInput: document.querySelector('.search-input'),
-        searchButton: document.querySelector('.search-button'),
-        countryDisplay: document.querySelector('.country-display'),
-        flagImage: document.querySelector('.flag-image'),
-        countryName: document.querySelector('.country-name h1'),
-        countrySubtitle: document.querySelector('.country-name h2'),
-        region: document.querySelector('.region'),
-        population: document.querySelector('.population'),
-        languages: document.querySelector('.languages'),
-        currency: document.querySelector('.currency'),
-        description: document.querySelector('.description p'),
-        photoGallery: document.querySelector('.photo-gallery'),
-        expandedView: document.querySelector('.expanded-view'),
-        expandedImage: document.querySelector('.expanded-image'),
-        closeButton: document.querySelector('.close-button'),
-        loadingAnimation: document.querySelector('.loading-animation')
-    };
-
-    setupEventListeners();
-    handleLottieAnimations();
+// Verify all required elements exist
+function verifyElements() {
+    const requiredElements = ['searchInput', 'searchButton', 'countryDisplay', 'flagImage', 'countryName', 'region', 'population', 'currency', 'languages', 'description', 'photoGallery', 'expandedView', 'expandedImage', 'closeButton', 'loadingAnimation'];
+    
+    for (const element of requiredElements) {
+        if (!elements[element]) {
+            console.error(`Required element not found: ${element}`);
+            return false;
+        }
+    }
+    return true;
 }
 
-function setupEventListeners() {
-    // Search button click
-    if (elements.searchButton) {
-        elements.searchButton.addEventListener('click', handleSearch);
-    }
-    
-    // Search input enter key
-    if (elements.searchInput) {
-        elements.searchInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                handleSearch();
+// Event Listeners
+if (elements.searchButton && elements.searchInput) {
+    elements.searchButton.addEventListener('click', () => {
+        const countryName = elements.searchInput.value.trim();
+        if (countryName) {
+            fetchCountryInfo(countryName);
+        }
+    });
+
+    elements.searchInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            const countryName = elements.searchInput.value.trim();
+            if (countryName) {
+                fetchCountryInfo(countryName);
             }
-        });
-    }
-    
-    // Close expanded view when clicking outside
-    if (elements.expandedView) {
-        elements.expandedView.addEventListener('click', (e) => {
-            if (e.target === elements.expandedView) {
-                elements.expandedView.classList.remove('active');
-            }
-        });
-    }
-    
-    // Close expanded view with close button
-    if (elements.closeButton) {
-        elements.closeButton.addEventListener('click', () => {
+        }
+    });
+}
+
+if (elements.expandedView) {
+    elements.expandedView.addEventListener('click', (e) => {
+        if (e.target === elements.expandedView) {
             elements.expandedView.classList.remove('active');
-        });
-    }
+        }
+    });
 }
 
-function handleLottieAnimations() {
+if (elements.closeButton) {
+    elements.closeButton.addEventListener('click', () => {
+        elements.expandedView.classList.remove('active');
+    });
+}
+
+// Handle Lottie Animation Fallbacks
+document.addEventListener('DOMContentLoaded', () => {
+    // Get all lottie players
     const lottiePlayers = document.querySelectorAll('lottie-player');
     
+    // Add error handler to each lottie player
     lottiePlayers.forEach(player => {
         player.addEventListener('error', (e) => {
             console.warn('Lottie animation failed to load:', e);
@@ -116,32 +118,7 @@ function handleLottieAnimations() {
             }
         });
     });
-}
-
-function handleSearch() {
-    const countryName = elements.searchInput.value.trim();
-    if (countryName) {
-        fetchCountryInfo(countryName);
-    }
-}
-
-function verifyElements() {
-    const requiredElements = [
-        'searchInput', 'searchButton', 'countryDisplay', 
-        'flagImage', 'countryName', 'region', 
-        'population', 'currency', 'languages', 
-        'description', 'photoGallery', 'expandedView', 
-        'expandedImage', 'closeButton', 'loadingAnimation'
-    ];
-    
-    for (const element of requiredElements) {
-        if (!elements[element]) {
-            console.error(`Required element not found: ${element}`);
-            return false;
-        }
-    }
-    return true;
-}
+});
 
 // API Functions
 async function fetchCountryInfo(countryName) {
@@ -152,14 +129,26 @@ async function fetchCountryInfo(countryName) {
 
     showLoading();
     try {
+        // Normalize country name
         const normalizedName = normalizeCountryName(countryName);
         
-        const response = await fetch(`${API_CONFIG.REST_COUNTRIES.BASE_URL}/name/${encodeURIComponent(normalizedName)}?fullText=false`);
+        // Try exact search first
+        const response = await fetch(`${API_CONFIG.REST_COUNTRIES.BASE_URL}/${encodeURIComponent(normalizedName)}`);
         
         if (response.ok) {
             const data = await response.json();
-            if (data && data.length > 0) {
+            if (data && data[0]) {
                 displayCountryInfo(data[0]);
+                return;
+            }
+        }
+        
+        // If exact search failed, try partial search
+        const partialResponse = await fetch(`https://restcountries.com/v3.1/name/${encodeURIComponent(normalizedName)}?fullText=false`);
+        if (partialResponse.ok) {
+            const partialData = await partialResponse.json();
+            if (partialData && partialData.length > 0) {
+                displayCountryInfo(partialData[0]);
                 return;
             }
         }
@@ -172,11 +161,18 @@ async function fetchCountryInfo(countryName) {
     }
 }
 
+/**
+ * Normalizes country names to improve search reliability
+ * @param {string} input - The user input country name
+ * @return {string} - The normalized country name
+ */
 function normalizeCountryName(input) {
     if (!input) return '';
     
-    const normalized = input.toLowerCase().trim();
+    // Convert to lowercase and trim
+    let normalized = input.toLowerCase().trim();
     
+    // Common country name variations
     const countryVariations = {
         'us': 'united states',
         'usa': 'united states',
@@ -184,9 +180,11 @@ function normalizeCountryName(input) {
         'uk': 'united kingdom',
         'britain': 'united kingdom',
         'england': 'united kingdom',
-        'holland': 'netherlands'
+        'holland': 'netherlands',
+        'russia': 'russian federation'
     };
     
+    // Return the normalized version or the original trimmed input
     return countryVariations[normalized] || normalized;
 }
 
@@ -201,12 +199,10 @@ async function fetchWikipediaData(countryName) {
         if (!response.ok) {
             throw new Error('Wikipedia data not found');
         }
-        
         const data = await response.json();
         if (!data || !data.extract) {
             throw new Error('No description available');
         }
-        
         elements.description.textContent = data.extract;
     } catch (error) {
         elements.description.textContent = 'Description not available.';
@@ -226,16 +222,13 @@ async function fetchCountryImages(countryName) {
                 headers: API_CONFIG.UNSPLASH.HEADERS
             }
         );
-        
         if (!response.ok) {
             throw new Error('Images not found');
         }
-        
         const data = await response.json();
         if (!data || !data.results || data.results.length === 0) {
             throw new Error('No images available');
         }
-        
         displayImages(data.results);
     } catch (error) {
         showError('Images not available.');
@@ -249,7 +242,7 @@ function displayCountryInfo(countryData) {
     // Show the country display section
     elements.countryDisplay.style.display = 'block';
     
-    // Update country name and subtitle
+    // Update country name
     elements.countryName.textContent = countryData.name.common;
     elements.countrySubtitle.textContent = countryData.name.official;
     
@@ -259,26 +252,16 @@ function displayCountryInfo(countryData) {
     
     // Update info boxes
     elements.region.textContent = `${countryData.region} (${countryData.subregion})`;
-    elements.population.textContent = formatNumber(countryData.population);
+    elements.population.textContent = countryData.population.toLocaleString();
+    elements.currency.textContent = Object.values(countryData.currencies)
+        .map(currency => `${currency.name} (${currency.symbol})`)
+        .join(', ');
+    elements.languages.textContent = Object.values(countryData.languages).join(', ');
     
-    // Update currency
-    if (countryData.currencies) {
-        elements.currency.textContent = Object.values(countryData.currencies)
-            .map(currency => `${currency.name} (${currency.symbol})`)
-            .join(', ');
-    } else {
-        elements.currency.textContent = 'Not available';
-    }
-    
-    // Update languages
-    if (countryData.languages) {
-        elements.languages.textContent = Object.values(countryData.languages).join(', ');
-    } else {
-        elements.languages.textContent = 'Not available';
-    }
-    
-    // Fetch and display additional data
+    // Fetch and display description
     fetchWikipediaData(countryData.name.common);
+    
+    // Fetch and display images
     fetchCountryImages(countryData.name.common);
 }
 
@@ -299,6 +282,7 @@ function displayImages(images) {
         const overlay = document.createElement('div');
         overlay.className = 'gallery-overlay';
         
+        // Add travel icon
         const icon = document.createElement('i');
         icon.className = 'bi bi-arrows-fullscreen';
         overlay.appendChild(icon);
@@ -312,13 +296,6 @@ function displayImages(images) {
 }
 
 // Utility Functions
-function showExpandedView(imageSrc) {
-    if (!elements.expandedView || !elements.expandedImage) return;
-    
-    elements.expandedImage.src = imageSrc;
-    elements.expandedView.classList.add('active');
-}
-
 function formatNumber(num) {
     return new Intl.NumberFormat().format(num);
 }
@@ -343,7 +320,7 @@ function showError(message) {
     const searchSection = document.querySelector('.search-section');
     if (!searchSection) return;
     
-    // Remove existing alerts
+    // Remove any existing alerts
     const existingAlert = document.querySelector('.alert');
     if (existingAlert) {
         existingAlert.remove();
@@ -366,5 +343,36 @@ function showError(message) {
     setTimeout(() => {
         alert.classList.add('fade-out');
         setTimeout(() => alert.remove(), 500);
-    }, UI_CONFIG.ALERT.DISPLAY_TIME);
+    }, 5000);
+}
+
+function showExpandedView(imageUrl) {
+    if (!elements.expandedImage || !elements.expandedView) return;
+
+    elements.expandedImage.src = imageUrl;
+    elements.expandedView.classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeExpandedView() {
+    if (!elements.expandedView) return;
+
+    elements.expandedView.classList.remove('active');
+    document.body.style.overflow = '';
+}
+
+// Update photo gallery click handlers
+function updatePhotoGallery(photos) {
+    elements.photoGallery.innerHTML = '';
+    photos.forEach(photo => {
+        const img = document.createElement('img');
+        img.src = photo.urls.regular;
+        img.alt = `Photo of ${elements.countryName.textContent}`;
+        img.classList.add('gallery-item');
+        img.addEventListener('click', () => {
+            elements.expandedImage.src = photo.urls.regular;
+            elements.expandedView.classList.add('active');
+        });
+        elements.photoGallery.appendChild(img);
+    });
 } 
