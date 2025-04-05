@@ -74,6 +74,17 @@ body {
     line-height: 1.6;
 }
 
+/* Apply heading fonts globally */
+h1, h2, h3, h4, h5, h6, .navbar-brand {
+    font-family: var(--header-font);
+    font-weight: normal;
+}
+
+/* Apply body font to all text elements */
+p, span, div, button, input, a, li {
+    font-family: var(--body-font);
+}
+
 body::before {
     content: '';
     position: fixed;
@@ -118,7 +129,6 @@ body::before {
 .navbar-brand {
     color: var(--white);
     font-size: var(--font-size-xl);
-    font-family: var(--header-font);
     text-align: center;
     margin: 0;
     padding: var(--spacing-md) 0;
@@ -157,7 +167,6 @@ body::before {
     border-radius: var(--radius);
     padding: var(--spacing-sm) var(--spacing-md);
     font-size: var(--font-size-md);
-    font-family: var(--body-font);
     cursor: pointer;
     transition: var(--transition);
     min-width: 8rem;
@@ -211,7 +220,6 @@ body::before {
 
 .country-name h1 {
     color: var(--primary);
-    font-family: var(--header-font);
     font-size: 2.5rem;
     margin: 0;
 }
@@ -231,6 +239,12 @@ body::before {
     box-shadow: 0 2px 10px var(--shadow);
     animation: slideIn 0.5s ease-out;
     animation-fill-mode: both;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.info-box:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px var(--shadow);
 }
 
 .info-box:nth-child(1) { animation-delay: 0.1s; }
@@ -249,6 +263,11 @@ body::before {
 
 .info-box h3 i {
     color: var(--secondary);
+    transition: transform 0.3s ease;
+}
+
+.info-box:hover h3 i {
+    transform: scale(1.2);
 }
 
 .info-box p {
@@ -398,9 +417,10 @@ body::before {
 .footer {
     background-color: var(--primary);
     color: var(--white);
-    padding: var(--spacing-sm);
+    padding: 1.5rem 0;
     text-align: center;
     width: 100%;
+    margin-top: var(--spacing-md);
 }
 
 .footer-content {
@@ -414,41 +434,61 @@ body::before {
 
 .footer-text {
     margin: 0;
-    font-size: var(--font-size-sm);
+    font-size: 1.4rem;
+    font-weight: normal;
 }
 
 .footer-links {
     display: flex;
-    gap: 1.5rem;
+    gap: 2rem;
     margin-bottom: var(--spacing-sm);
 }
 
 .footer-link {
     color: var(--white);
-    font-size: 1.5rem;
-    transition: color 0.3s ease;
+    font-size: 1.8rem;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .footer-link:hover {
-    color: var(--secondary);
+    color: var(--white);
+    transform: translateY(-3px);
 }
 
 /* Loading Animation */
 .loading-animation {
     position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
     z-index: 2000;
     display: none;
     background: rgba(255, 255, 255, 0.95);
-    padding: var(--spacing-lg);
-    border-radius: var(--radius);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(5px);
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
 }
 
 .loading-animation.active {
-    display: block;
+    display: flex;
+}
+
+.loading-text {
+    color: var(--primary);
+    font-size: var(--font-size-md);
+    margin-top: var(--spacing-md);
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% { opacity: 0.6; }
+    50% { opacity: 1; }
+    100% { opacity: 0.6; }
 }
 
 /* ==========================================================================
@@ -518,24 +558,19 @@ body::before {
     }
 
     .footer {
-        padding: var(--spacing-xs);
-    }
-
-    .footer-content {
-        gap: var(--spacing-xs);
+        padding: 1rem 0;
     }
 
     .footer-text {
-        font-size: var(--font-size-xs);
+        font-size: 1.2rem;
     }
 
     .footer-links {
-        gap: var(--spacing-sm);
-        margin-bottom: var(--spacing-xs);
+        gap: 1.5rem;
     }
 
     .footer-link {
-        font-size: 1.25rem;
+        font-size: 1.6rem;
     }
 
     .close-button {
@@ -569,24 +604,19 @@ body::before {
     }
 
     .footer {
-        padding: var(--spacing-xs);
-    }
-
-    .footer-content {
-        gap: var(--spacing-xs);
+        padding: 0.8rem 0;
     }
 
     .footer-text {
-        font-size: var(--font-size-xs);
+        font-size: 1.1rem;
     }
 
     .footer-links {
-        gap: var(--spacing-xs);
-        margin-bottom: var(--spacing-xs);
+        gap: 1.2rem;
     }
 
     .footer-link {
-        font-size: 1.1rem;
+        font-size: 1.4rem;
     }
 
     .close-button {
@@ -596,9 +626,8 @@ body::before {
     }
 }
 
-/* ==========================================================================
-   Dark Mode
-   ========================================================================== */
+/* Dark Mode */
+
 
 @media (prefers-color-scheme: dark) {
     :root {
@@ -637,4 +666,76 @@ body::before {
     font-size: 1.6rem;
     line-height: 1.8;
     color: var(--text);
+}
+
+/* Empty State */
+.empty-state {
+    margin-top: var(--spacing-lg);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.empty-state-text {
+    color: var(--primary);
+    font-size: var(--font-size-md);
+    margin-top: var(--spacing-sm);
+    text-align: center;
+    animation: fadeIn 1s ease-out;
+}
+
+/* Welcome Animation */
+.welcome-animation {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 3000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--bg);
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.5s ease, visibility 0.5s ease;
+}
+
+.welcome-animation.hidden {
+    opacity: 0;
+    visibility: hidden;
+}
+
+/* Alert */
+.alert {
+    background-color: #fff5f5;
+    border-left: 4px solid var(--primary);
+    color: var(--text);
+    padding: 1rem 1.5rem;
+    margin: 1rem 0;
+    border-radius: var(--radius);
+    position: relative;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    font-size: var(--font-size-md);
+    animation: slideIn 0.3s ease;
+}
+
+.alert-close {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    background: none;
+    border: none;
+    color: var(--text);
+    font-size: 1.6rem;
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
+}
+
+.alert.fade-out {
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
 } 

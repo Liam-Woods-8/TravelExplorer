@@ -34,7 +34,6 @@ const elements = {
     searchInput: document.querySelector('.search-input'),
     searchButton: document.querySelector('.search-button'),
     countryDisplay: document.querySelector('.country-display'),
-    welcomeSection: document.querySelector('.welcome-section'),
     flagImage: document.querySelector('.flag-image'),
     countryName: document.querySelector('.country-name h1'),
     countrySubtitle: document.querySelector('.country-name h2'),
@@ -52,7 +51,7 @@ const elements = {
 
 // Verify all required elements exist
 function verifyElements() {
-    const requiredElements = ['searchInput', 'searchButton', 'countryDisplay', 'flagImage', 'countryName', 'countrySubtitle', 'region', 'population', 'currency', 'languages', 'description', 'photoGallery', 'expandedView', 'expandedImage', 'closeButton', 'loadingAnimation'];
+    const requiredElements = ['searchInput', 'searchButton', 'countryDisplay', 'flagImage', 'countryName', 'region', 'population', 'currency', 'languages', 'description', 'photoGallery', 'expandedView', 'expandedImage', 'closeButton', 'loadingAnimation'];
     
     for (const element of requiredElements) {
         if (!elements[element]) {
@@ -96,6 +95,31 @@ if (elements.closeButton) {
     });
 }
 
+// Handle Lottie Animation Fallbacks
+document.addEventListener('DOMContentLoaded', () => {
+    // Get all lottie players
+    const lottiePlayers = document.querySelectorAll('lottie-player');
+    
+    // Add error handler to each lottie player
+    lottiePlayers.forEach(player => {
+        player.addEventListener('error', (e) => {
+            console.warn('Lottie animation failed to load:', e);
+            
+            // Show fallback content
+            const parent = player.parentElement;
+            player.style.display = 'none';
+            
+            if (parent.querySelector('.fallback-icon')) {
+                parent.querySelector('.fallback-icon').style.display = 'block';
+            }
+            
+            if (parent.querySelector('.fallback-spinner')) {
+                parent.querySelector('.fallback-spinner').style.display = 'block';
+            }
+        });
+    });
+});
+
 // API Functions
 async function fetchCountryInfo(countryName) {
     if (!verifyElements()) {
@@ -105,20 +129,63 @@ async function fetchCountryInfo(countryName) {
 
     showLoading();
     try {
-        const response = await fetch(`${API_CONFIG.REST_COUNTRIES.BASE_URL}/${encodeURIComponent(countryName)}`);
-        if (!response.ok) {
-            throw new Error('Country not found');
+        // Normalize country name
+        const normalizedName = normalizeCountryName(countryName);
+        
+        // Try exact search first
+        const response = await fetch(`${API_CONFIG.REST_COUNTRIES.BASE_URL}/${encodeURIComponent(normalizedName)}`);
+        
+        if (response.ok) {
+            const data = await response.json();
+            if (data && data[0]) {
+                displayCountryInfo(data[0]);
+                return;
+            }
         }
-        const data = await response.json();
-        if (!data || !data[0]) {
-            throw new Error('Invalid country data received');
+        
+        // If exact search failed, try partial search
+        const partialResponse = await fetch(`https://restcountries.com/v3.1/name/${encodeURIComponent(normalizedName)}?fullText=false`);
+        if (partialResponse.ok) {
+            const partialData = await partialResponse.json();
+            if (partialData && partialData.length > 0) {
+                displayCountryInfo(partialData[0]);
+                return;
+            }
         }
-        displayCountryInfo(data[0]);
+        
+        throw new Error(`We couldn't find "${countryName}". Please check the spelling or try another country.`);
     } catch (error) {
         showError(error.message || 'Country not found. Please try again.');
     } finally {
         hideLoading();
     }
+}
+
+/**
+ * Normalizes country names to improve search reliability
+ * @param {string} input - The user input country name
+ * @return {string} - The normalized country name
+ */
+function normalizeCountryName(input) {
+    if (!input) return '';
+    
+    // Convert to lowercase and trim
+    let normalized = input.toLowerCase().trim();
+    
+    // Common country name variations
+    const countryVariations = {
+        'us': 'united states',
+        'usa': 'united states',
+        'america': 'united states',
+        'uk': 'united kingdom',
+        'britain': 'united kingdom',
+        'england': 'united kingdom',
+        'holland': 'netherlands',
+        'russia': 'russian federation'
+    };
+    
+    // Return the normalized version or the original trimmed input
+    return countryVariations[normalized] || normalized;
 }
 
 async function fetchWikipediaData(countryName) {
@@ -214,7 +281,11 @@ function displayImages(images) {
         
         const overlay = document.createElement('div');
         overlay.className = 'gallery-overlay';
-        overlay.innerHTML = `<i class="bi bi-zoom-in"></i>`;
+        
+        // Add travel icon
+        const icon = document.createElement('i');
+        icon.className = 'bi bi-arrows-fullscreen';
+        overlay.appendChild(icon);
         
         imgContainer.appendChild(img);
         imgContainer.appendChild(overlay);
@@ -244,17 +315,35 @@ function hideLoading() {
 }
 
 function showError(message) {
+    hideLoading();
+    
     const searchSection = document.querySelector('.search-section');
     if (!searchSection) return;
-
-    const alert = document.createElement('div');
-    alert.className = 'alert alert-danger';
-    alert.textContent = message;
-    searchSection.appendChild(alert);
     
+    // Remove any existing alerts
+    const existingAlert = document.querySelector('.alert');
+    if (existingAlert) {
+        existingAlert.remove();
+    }
+    
+    // Create alert element
+    const alert = document.createElement('div');
+    alert.className = 'alert';
+    alert.textContent = message;
+    
+    // Add close button
+    const closeBtn = document.createElement('button');
+    closeBtn.className = 'alert-close';
+    closeBtn.innerHTML = '&times;';
+    closeBtn.addEventListener('click', () => alert.remove());
+    alert.appendChild(closeBtn);
+    
+    // Show for 5 seconds then fade out
+    searchSection.appendChild(alert);
     setTimeout(() => {
-        alert.remove();
-    }, 3000);
+        alert.classList.add('fade-out');
+        setTimeout(() => alert.remove(), 500);
+    }, 5000);
 }
 
 function showExpandedView(imageUrl) {
