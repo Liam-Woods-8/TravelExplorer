@@ -1,22 +1,27 @@
-/* Main Styles for Travel Explorer */
+/* ==========================================================================
+   Base Styles
+   ========================================================================== */
 
-/* Custom Fonts */
+/* Fonts */
 @font-face {
-    font-family: 'The Rufly';
-    src: url('The Rufly.otf') format('opentype');
+    font-family: "Coiny";
+    src: url("file:///C:/Users/Liam/OneDrive/Desktop/projectist363/TravelExplorer/Coiny-Cyrillic.ttf") format("truetype");
     font-weight: normal;
     font-style: normal;
+    font-display: swap;
 }
 
 @font-face {
-    font-family: 'Coiny Cyrillic';
-    src: url('Coiny-Cyrillic.ttf') format('truetype');
+    font-family: "Rufly";
+    src: url("file:///C:/Users/Liam/OneDrive/Desktop/projectist363/TravelExplorer/The Rufly.otf") format("opentype");
     font-weight: normal;
     font-style: normal;
+    font-display: swap;
 }
 
-/* Theme Colors and Settings */
+/* Variables */
 :root {
+    /* Colors */
     --primary: #FF6B35;
     --secondary: #FF8C61;
     --bg: #FFF5EB;
@@ -25,39 +30,50 @@
     --shadow: rgba(255, 107, 53, 0.2);
     --error: #ff4444;
     --error-bg: #fff5f5;
+    
+    /* Spacing & Sizing */
     --radius: 12px;
+    --container-width: 1200px;
+    --spacing-xs: 0.5rem;
+    --spacing-sm: 1rem;
+    --spacing-md: 2rem;
+    --spacing-lg: 3rem;
+    
+    /* Typography */
+    --header-font: "Rufly", sans-serif;
+    --body-font: "Coiny", sans-serif;
+    --font-size-xs: 0.8rem;
+    --font-size-sm: 1rem;
+    --font-size-md: 1.6rem;
+    --font-size-lg: 2.4rem;
+    --font-size-xl: 8rem;
+    
+    /* Transitions */
     --transition: all 0.3s ease;
-    --primary-color: #2c3e50;
-    --secondary-color: #3498db;
-    --accent-color: #e74c3c;
-    --text-color: #333;
-    --background-color: #f5f5f5;
-    --card-background: #fff;
-    --header-font: 'The Rufly', sans-serif;
-    --body-font: 'Coiny Cyrillic', sans-serif;
 }
 
-/* Basic Layout */
+/* Reset & Base */
 html {
     font-size: 62.5%;
-    height: 100%;
+    box-sizing: border-box;
+}
+
+*, *::before, *::after {
+    box-sizing: inherit;
+    margin: 0;
+    padding: 0;
 }
 
 body {
-    background-color: var(--background-color);
-    color: var(--text-color);
+    background-color: var(--bg);
+    color: var(--text);
     font-family: var(--body-font);
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    font-size: 1.6rem;
-    margin: 0;
-    padding: 0;
-    position: relative;
     line-height: 1.6;
 }
 
-/* Background Pattern */
 body::before {
     content: '';
     position: fixed;
@@ -73,22 +89,25 @@ body::before {
     opacity: 0.1;
 }
 
-/* Main Content Area */
+/* ==========================================================================
+   Layout Components
+   ========================================================================== */
+
+/* Container */
 .container {
-    flex: 1 0 auto;
-    padding: 2rem 0;
-    width: 90%;
-    max-width: 1200px;
+    max-width: var(--container-width);
     margin: 0 auto;
-    min-height: calc(100vh - 200px);
+    padding: var(--spacing-md);
+    flex: 1;
     display: flex;
     flex-direction: column;
+    gap: var(--spacing-md);
 }
 
-/* Header Styles */
+/* Navigation */
 .navbar {
     background-color: var(--primary);
-    padding: 1rem 0;
+    padding: var(--spacing-sm) 0;
     box-shadow: 0 2px 10px var(--shadow);
     width: 100%;
     display: flex;
@@ -98,11 +117,11 @@ body::before {
 
 .navbar-brand {
     color: var(--white);
-    font-size: 8rem;
-    font-family: "The Rufly", sans-serif;
+    font-size: var(--font-size-xl);
+    font-family: var(--header-font);
     text-align: center;
     margin: 0;
-    padding: 2rem 0;
+    padding: var(--spacing-md) 0;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
     pointer-events: none;
     user-select: none;
@@ -110,30 +129,25 @@ body::before {
 
 /* Search Section */
 .search-section {
-    margin: 4rem 0;
+    margin: var(--spacing-md) 0;
     text-align: center;
-    min-height: 200px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    flex: 1;
 }
 
 .search-box {
     display: flex;
     justify-content: center;
-    gap: 1rem;
+    gap: var(--spacing-sm);
     margin: 0 auto;
     max-width: 600px;
 }
 
 .search-input {
     flex: 1;
-    padding: 1rem 1.5rem;
+    padding: var(--spacing-sm) 1.5rem;
     border: 2px solid var(--primary);
     border-radius: var(--radius);
-    font-size: 1.6rem;
-    font-family: "Coiny Cyrillic", sans-serif;
+    font-size: var(--font-size-md);
+    font-family: var(--body-font);
 }
 
 .search-button {
@@ -141,9 +155,9 @@ body::before {
     color: var(--white);
     border: none;
     border-radius: var(--radius);
-    padding: 1rem 2rem;
-    font-size: 1.6rem;
-    font-family: "Coiny Cyrillic", sans-serif;
+    padding: var(--spacing-sm) var(--spacing-md);
+    font-size: var(--font-size-md);
+    font-family: var(--body-font);
     cursor: pointer;
     transition: var(--transition);
     min-width: 8rem;
@@ -159,19 +173,17 @@ body::before {
     animation: pop 0.2s ease-out;
 }
 
-@keyframes pop {
-    0% { transform: scale(1); }
-    50% { transform: scale(0.95); }
-    100% { transform: scale(1); }
-}
+/* ==========================================================================
+   Content Components
+   ========================================================================== */
 
 /* Country Display */
 .country-display {
     background: var(--white);
     border-radius: var(--radius);
-    padding: 2rem;
+    padding: var(--spacing-md);
     box-shadow: 0 2px 10px var(--shadow);
-    margin: 2rem 0;
+    margin: var(--spacing-md) 0;
     display: none;
     animation: fadeIn 0.5s ease-out;
 }
@@ -179,8 +191,8 @@ body::before {
 .country-content {
     display: flex;
     align-items: center;
-    gap: 2rem;
-    margin-bottom: 2rem;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
 }
 
 .flag-box {
@@ -199,18 +211,18 @@ body::before {
 
 .country-name h1 {
     color: var(--primary);
-    font-family: "The Rufly", sans-serif;
+    font-family: var(--header-font);
     font-size: 2.5rem;
     margin: 0;
 }
 
 .country-name h2 {
     color: var(--secondary);
-    font-size: 1.6rem;
+    font-size: var(--font-size-md);
     margin: 0.5rem 0 0;
 }
 
-/* Info Cards */
+/* Info Boxes */
 .info-box {
     background: var(--white);
     border-radius: var(--radius);
@@ -228,11 +240,11 @@ body::before {
 
 .info-box h3 {
     color: var(--primary);
-    font-size: 1.6rem;
-    margin-bottom: 1rem;
+    font-size: var(--font-size-md);
+    margin-bottom: var(--spacing-sm);
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: var(--spacing-xs);
 }
 
 .info-box h3 i {
@@ -241,7 +253,7 @@ body::before {
 
 .info-box p {
     margin: 0;
-    font-size: 1.4rem;
+    font-size: var(--font-size-sm);
     line-height: 1.5;
 }
 
@@ -250,8 +262,8 @@ body::before {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: 1.5rem;
-    margin-top: 2rem;
-    padding: 1rem;
+    margin-top: var(--spacing-md);
+    padding: var(--spacing-sm);
 }
 
 .gallery-item {
@@ -278,7 +290,6 @@ body::before {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.5);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -288,12 +299,14 @@ body::before {
 
 .gallery-overlay i {
     color: var(--white);
-    font-size: 3rem;
+    font-size: 2.5rem;
+    transform: scale(0.5);
     transition: var(--transition);
 }
 
 .gallery-item:hover {
     transform: translateY(-5px);
+    box-shadow: 0 4px 15px var(--shadow);
 }
 
 .gallery-item:hover .gallery-overlay {
@@ -301,21 +314,22 @@ body::before {
 }
 
 .gallery-item:hover .gallery-overlay i {
-    transform: scale(1.2);
+    transform: scale(1);
 }
 
 .gallery-item:hover img {
     transform: scale(1.1);
 }
 
-/* Image Preview */
+/* Expanded Image View */
 .expanded-view {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.9);
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(5px);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -330,12 +344,22 @@ body::before {
     visibility: visible;
 }
 
-.expanded-image {
+.expanded-image-container {
+    position: relative;
     max-width: 90%;
+    max-height: 90vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.expanded-image {
+    max-width: 100%;
     max-height: 90vh;
     object-fit: contain;
     border-radius: var(--radius);
-    transform: scale(0.9);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    transform: scale(0.8);
     transition: var(--transition);
 }
 
@@ -343,63 +367,100 @@ body::before {
     transform: scale(1);
 }
 
+.close-button {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background: rgba(0, 0, 0, 0.5);
+    border: none;
+    color: var(--white);
+    font-size: 2.5rem;
+    cursor: pointer;
+    padding: var(--spacing-xs);
+    transition: var(--transition);
+    z-index: 1001;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    margin: var(--spacing-xs);
+}
+
+.close-button:hover {
+    transform: scale(1.1);
+    color: var(--secondary);
+    background: rgba(0, 0, 0, 0.7);
+}
+
 /* Footer */
 .footer {
     background-color: var(--primary);
     color: var(--white);
-    padding: 2rem 0;
+    padding: var(--spacing-sm);
     text-align: center;
     width: 100%;
-    margin-top: auto;
 }
 
-.footer p {
+.footer-content {
+    max-width: var(--container-width);
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.footer-text {
     margin: 0;
-    font-size: 1.4rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
+    font-size: var(--font-size-sm);
 }
 
-.footer a {
+.footer-links {
+    display: flex;
+    gap: 1.5rem;
+    margin-bottom: var(--spacing-sm);
+}
+
+.footer-link {
     color: var(--white);
-    text-decoration: none;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
+    font-size: 1.5rem;
+    transition: color 0.3s ease;
 }
 
-.footer a:hover {
+.footer-link:hover {
     color: var(--secondary);
-    transform: translateY(-2px);
-    transition: var(--transition);
-}
-
-.footer i {
-    font-size: 1.6rem;
 }
 
 /* Loading Animation */
 .loading-animation {
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(255, 255, 255, 0.9);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 9999;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 2000;
     display: none;
+    background: rgba(255, 255, 255, 0.95);
+    padding: var(--spacing-lg);
+    border-radius: var(--radius);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
 }
 
 .loading-animation.active {
-    display: flex;
+    display: block;
 }
 
-/* Animations */
+/* ==========================================================================
+   Animations
+   ========================================================================== */
+
+@keyframes pop {
+    0% { transform: scale(1); }
+    50% { transform: scale(0.95); }
+    100% { transform: scale(1); }
+}
+
 @keyframes fadeIn {
     from {
         opacity: 0;
@@ -422,37 +483,16 @@ body::before {
     }
 }
 
-/* Country Description */
-.description {
-    background: var(--white);
-    border-radius: var(--radius);
-    padding: 2rem;
-    margin: 2rem 0;
-    box-shadow: 0 2px 10px var(--shadow);
-}
+/* ==========================================================================
+   Responsive Design
+   ========================================================================== */
 
-.description h3 {
-    color: var(--primary);
-    font-size: 2rem;
-    margin-bottom: 1rem;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.description h3 i {
-    color: var(--secondary);
-}
-
-.description p {
-    margin: 0;
-    font-size: 1.4rem;
-    line-height: 1.6;
-}
-
-/* Mobile Styles */
 @media (max-width: 768px) {
     html { font-size: 56.25%; }
+    
+    .navbar-brand {
+        font-size: 6rem;
+    }
     
     .country-content {
         flex-direction: column;
@@ -460,17 +500,57 @@ body::before {
     }
     
     .flag-box {
-        width: 15rem;
-        height: 10rem;
+        width: 8rem;
+        height: 5.6rem;
+    }
+    
+    .country-name h1 {
+        font-size: 2rem;
     }
     
     .photo-gallery {
         grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: var(--spacing-sm);
+    }
+
+    .container {
+        padding: var(--spacing-sm);
+    }
+
+    .footer {
+        padding: var(--spacing-xs);
+    }
+
+    .footer-content {
+        gap: var(--spacing-xs);
+    }
+
+    .footer-text {
+        font-size: var(--font-size-xs);
+    }
+
+    .footer-links {
+        gap: var(--spacing-sm);
+        margin-bottom: var(--spacing-xs);
+    }
+
+    .footer-link {
+        font-size: 1.25rem;
+    }
+
+    .close-button {
+        font-size: 2rem;
+        width: 2.5rem;
+        height: 2.5rem;
     }
 }
 
-@media (max-width: 576px) {
+@media (max-width: 480px) {
     html { font-size: 50%; }
+    
+    .navbar-brand {
+        font-size: 4rem;
+    }
     
     .search-box {
         flex-direction: column;
@@ -483,24 +563,78 @@ body::before {
     .photo-gallery {
         grid-template-columns: 1fr;
     }
+
+    .container {
+        padding: var(--spacing-xs);
+    }
+
+    .footer {
+        padding: var(--spacing-xs);
+    }
+
+    .footer-content {
+        gap: var(--spacing-xs);
+    }
+
+    .footer-text {
+        font-size: var(--font-size-xs);
+    }
+
+    .footer-links {
+        gap: var(--spacing-xs);
+        margin-bottom: var(--spacing-xs);
+    }
+
+    .footer-link {
+        font-size: 1.1rem;
+    }
+
+    .close-button {
+        font-size: 1.75rem;
+        width: 2.25rem;
+        height: 2.25rem;
+    }
 }
 
-/* Dark Mode */
+/* ==========================================================================
+   Dark Mode
+   ========================================================================== */
+
 @media (prefers-color-scheme: dark) {
     :root {
+        --primary: #FF8B1A;
+        --secondary: #FFB366;
         --bg: #1a1a1a;
         --text: #ffffff;
         --white: #2d2d2d;
-    }
-    
-    .modal-header {
-        background-color: var(--white);
-        color: var(--text);
+        --shadow: rgba(255, 139, 26, 0.2);
     }
 }
 
-/* Typography */
-h1, h2, h3, h4, h5, h6 {
-    font-family: var(--header-font);
-    color: var(--primary-color);
+/* Description */
+.description {
+    background: var(--white);
+    padding: 2rem;
+    border-radius: var(--radius);
+    margin: 2rem 0;
+    box-shadow: 0 2px 10px var(--shadow);
+}
+
+.description h3 {
+    color: var(--primary);
+    font-size: 2.4rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.description h3 i {
+    color: var(--primary);
+}
+
+.description p {
+    font-size: 1.6rem;
+    line-height: 1.8;
+    color: var(--text);
 } 
